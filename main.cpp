@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "cmdline.h"
+#include "Sensor.h"
 using namespace std;
 
 // ******** Protitipos de funciones de command line ******************
@@ -21,11 +22,11 @@ static option_t options[] = {
 };
 //********************Variables Globales**********************************
 
-static istream *iss = 0;
+static istream *iss = 0;  //archivo de entrada
 static ostream *oss = 0;
 static fstream ifs;
 static fstream ofs;
-static ifstream dataBaseFile ;
+static ifstream dataBaseFile ;   //
 
 int main(int argc, char * const argv[])
 {
@@ -34,6 +35,8 @@ int main(int argc, char * const argv[])
 	// a partir de aca hay que empezar a escribir el codigo usando solo *iss,*oss,
 	//ifs,ofs,dataBaseFile , ya que cmdline. ya se encargo de configurar
 	//los argumentos de ordenes en linea de comandos
+	Sensor  cpu;
+	cpu.queryTemp(iss,oss,dataBaseFile);
 	return 0;
 }
 
