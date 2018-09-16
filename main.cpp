@@ -28,7 +28,7 @@ static fstream ifs;
 static fstream ofs;
 static ifstream dataBaseFile ;   //
 
-int main(int argc, char * const argv[])
+int main(int argc, char * const argv[] )
 {
 	cmdline cmdl(options);
 	cmdl.parse(argc, argv);

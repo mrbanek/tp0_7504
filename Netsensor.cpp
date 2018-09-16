@@ -5,23 +5,53 @@
  *      Author: raul
  */
 #include<fstream>
+#include<string>
+#include<iostream>
+#include<cstdlib>
 #include"Netsensor.h"
-#define LONG_ARRAY 2
-#define LONG_MATRIX 4
-using namespace std;
+#define LONG_ARRAY 8
+#define LONG_MATRIX 8
 void NetSensor::readDataBase(ifstream & dataBaseFile)
 {
-	int i;
+	int i,sizeArray;
 	char c;
+	string aux;
 	name=new string[LONG_ARRAY];
-	*data=new int[LONG_MATRIX];
-	for(i=0;i<LONG_MATRIX;i++)
-			data[i]=new int[LONG_ARRAY];
-	for(i=0;i<LONG_ARRAY;i++)
+	data=new int*[LONG_MATRIX];
+
+	for(i=0;i<LONG_ARRAY &&  !isdigit(c) ;i++)
 	{
 		dataBaseFile>>name[i];
-		dataBaseFile>>c;
+		if(name[i][name[i].length()-1]==',')
+			name[i].erase(name[i].length()-1);
+		else
+			dataBaseFile>>c;   //leo la coma por separado
+		std::cout<<name[i]<<"\t";
 	}
+	std::cout<<"\n";
+	sizeArray=i;
+	aux=c;
+	for(i=0;i<LONG_MATRIX;i++)
+	{
+		data[i]=new int[sizeArray];
+		for(int j=0;j<sizeArray;j++)
+		{
+			if(j==0)
+			{
+				data[i][j]=atoi(aux.c_str());
+				std::cout<<data[i][j]<<"\t";
+				j++;
+				dataBaseFile>>aux;
+			}
+
+			dataBaseFile>>data[i][j];
+			dataBaseFile>>aux;
+			std::cout<<data[i][j]<<"\t";
+
+		}
+		std::cout<<"\n";
+	}
+
 
 
 }
