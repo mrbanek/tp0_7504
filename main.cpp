@@ -26,7 +26,7 @@ static istream *iss = 0;  //archivo de entrada
 static ostream *oss = 0;
 static fstream ifs;
 static fstream ofs;
-static ifstream dataBaseFile ;      //
+static ifstream dataBaseFile ;   //
 
 int main(int argc, char * const argv[])
 {
