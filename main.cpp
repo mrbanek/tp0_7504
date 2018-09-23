@@ -41,10 +41,6 @@ int main(int argc, char * const argv[] )
 }
 
 
-
-
-
-
 static void opt_input(string const &arg)
 {
     // Si el nombre del archivos es "-", usaremos la entrada

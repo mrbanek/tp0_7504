@@ -10,12 +10,14 @@
 
 #include <iostream>
 using namespace std;
-class NetSensor
+class NetSensor				//falta definir los construcores y destructores
 {
-	  string *name;
-	  int **data;
+	  string *name;			// arreglo dinamico que almacena la  cantidad de  sensores
+	  int **data;			// datos almacenados
+	  size_t row,column;	//dimensiones
 public:
 	  void readDataBase(ifstream &); //lee y carga los datos en una matriz
+	  friend class Sensor;
 };
 
 
