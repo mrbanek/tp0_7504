@@ -14,13 +14,11 @@
 #define LONG_MATRIX 18
 void NetSensor::readDataBase(ifstream & dataBaseFile)
 {
-	size_t i,fin;
+	size_t i,k,fin;
 	char c;
 	string aux,line;
-	size_t k;
 	name=new string[LONG_ARRAY];
 	data=new float*[LONG_MATRIX];		//falta agrandar el resize() de la matriz
-
 	for(i=0;i<LONG_ARRAY &&  !isdigit(c) ;i++) // leo la primer linea hasta encontrar la cantidad
 	{										  // de sensores en la base de datos
 		dataBaseFile>>name[i];					//se puede mejorar.

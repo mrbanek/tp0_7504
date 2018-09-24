@@ -14,7 +14,7 @@ Sensor::Sensor()   //constructor sin argumentos
 {
 	ranStart=ranEnd=min=max=N=0;
 	average=0;
-	good=bad=false;
+	badQuery=OK_QUERY;
 	name="";
 }
 void Sensor::queryTemp(istream *&iss,ostream *&oss,ifstream &dataBaseFile)
@@ -25,62 +25,60 @@ void Sensor::queryTemp(istream *&iss,ostream *&oss,ifstream &dataBaseFile)
 	 bool  allSensor=false;  //flag que me indica si busco entre todos los sensores
 	 while(*iss>>*this)   //operador sobre cargado
 	 {
-		if(good)  // es correcto el formato de lectura
+		if(badQuery!=3)
 		{
-			good=false;
 			if(!name.length())  // si es una consulta sin nombre elijo todos los sensores
 			{
 				allSensor=true;
 				searchAverage(allSensor,net,posSen);  //busco promedio entre todos los sensores
-				*oss<<*this;
+
 			}
 			else
 			{
 				for( posSen=0;name!=net.name[posSen] && posSen<net.column ;posSen++);// busco la posición del sensor
 				if(posSen==net.column)
-					*oss<<"UNKNOW ID"<<endl;
+					badQuery=3;
 				else
-					{
-						searchAverage(allSensor,net,posSen);
-						*oss<<*this;
-					}
-
+					searchAverage(allSensor,net,posSen);
 			}
 		}
-		if(bad)  // mala consulta
-		{
-			*oss<<"BAD QUERY"<<endl;
-			bad=false;
-		}
+		*oss<<*this;
+		if(badQuery)
+			badQuery=OK_QUERY;
 	 }
 }
+
 
 void Sensor::searchAverage(bool & allSensor,NetSensor &net,size_t &col) // a mejorar
 {
 	float acum=0;
 	float *allAverage;
-	int m;
-	size_t i;
-	if(allSensor)
+	size_t i,noData;
+	if(net.row-1<ranStart || ranStart>ranEnd)
+		badQuery=NO_DATA;
+	else
 	{
-		allAverage=new float[net.row];
-		for(size_t j=ranStart;j<ranEnd;j++)
+		if(allSensor)
 		{
-			for(i=0,m=0,acum=0;i<net.column;i++)
+			allAverage=new float[net.row];
+			for(size_t j=ranStart;j<ranEnd;j++)
 			{
-				if(net.data[j][i]!=-274)   // si no es un dato en blanco
-					acum+=net.data[j][i];
-				else
-					m++;
-			};
-			allAverage[j]=acum/(i-m);
+				for(i=0,noData=0,acum=0;i<net.column;i++)
+				{
+					if(net.data[j][i]!=-274)   // si no es un dato en blanco
+						acum+=net.data[j][i];
+					else
+						noData++;
+				}
+				allAverage[j]=acum/(i-noData);
+			}
+			getAverage(allAverage);  //calculo el promedio de todos los sensores
+			delete []allAverage;
+			allSensor=false;
 		}
-		getAverage(allAverage);  //calculo el promedio de todos los sensores
-		delete []allAverage;
-		allSensor=false;
+		else     //busco promedio para solo el sensor seleccionado
+			getAverage(net.data[col]);
 	}
-	else     //busco promedio para solo el sensor seleccionado
-		getAverage(net.data[col]);
 }
 
 void  Sensor::getAverage(float *arrayData)
@@ -117,24 +115,39 @@ istream &operator>>(istream &is,Sensor &s)
 	else
 	{
 		stringstream str_st(str);
-	str_st>>s.name;
+		str_st>>s.name;
 	}
 	if(is>>s.ranStart && is>>c && c==',' && is>>s.ranEnd)
 	{
-		s.good=true;	//lectura en formato correcto
+		s.badQuery=OK_QUERY;	//lectura en formato correcto
 		getline(is,str);  // leo hasta el final de linea para saltar a la siguiente
 
 	}
 	else		//si es malo elf formato
-	{	s.bad=true;
+	{
+		s.badQuery=BAD_QUERY;
 		is.clear();
 		getline(is,str,'\n');
 	}
 	return is;
 }
-ostream &operator<<(ostream &os,const Sensor &s)
+ostream &operator<<(ostream &os, const Sensor &s)
 {
-	os<<s.average<< " "<<s.min<< " "<<s.max<<" "<<s.N<<endl;
+	switch(s.badQuery)
+	{
+		case OK_QUERY:
+				os<<s.average<< " "<<s.min<< " "<<s.max<<" "<<s.N<<endl;
+			break;
+		case NO_DATA:
+				os<<"NO DATA"<<endl;
+			break;
+		case UNKNOW_ID:
+				os<<"UNKNOW ID"<<endl;
+			break;
+		case BAD_QUERY:
+				os<<"BAD QUERY"<<endl;
+			break;
+	}
 	return os;
 }
 
