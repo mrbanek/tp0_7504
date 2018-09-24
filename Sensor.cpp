@@ -10,7 +10,7 @@
 #include "Netsensor.h"
 
 
-Sensor::Sensor()   //constructor copia
+Sensor::Sensor()   //constructor sin argumentos
 {
 	ranStart=ranEnd=min=max=N=0;
 	average=0;
@@ -52,16 +52,13 @@ void Sensor::queryTemp(istream *&iss,ostream *&oss,ifstream &dataBaseFile)
 			*oss<<"BAD QUERY"<<endl;
 			bad=false;
 		}
-
 	 }
-
-
-
 }
+
 void Sensor::searchAverage(bool & allSensor,NetSensor &net,size_t &col) // a mejorar
 {
 	float acum=0;
-	float    *allAverage;
+	float *allAverage;
 	int m;
 	size_t i;
 	if(allSensor)
@@ -78,39 +75,34 @@ void Sensor::searchAverage(bool & allSensor,NetSensor &net,size_t &col) // a mej
 			};
 			allAverage[j]=acum/(i-m);
 		}
-		max=min=allAverage[ranStart];  //tomo el primer elemento como el maximo y minimo
-		for(i=ranStart,acum=0;i<ranEnd;i++)
-		{
-			if(allAverage[i]>max)
-				max=allAverage[i];
-			if(allAverage[i]<min)
-				min=allAverage[i];
-			acum+=allAverage[i];
-		}
-		N=ranEnd-ranStart;
-		average=acum/N;
+		getAverage(allAverage);  //calculo el promedio de todos los sensores
+		delete []allAverage;
 		allSensor=false;
 	}
-	else     //busco promedio para solo un sensor
-	{
-		max=min=net.data[ranStart][col];  //tomo el primero como el maximo y minimo
-		for(i=ranStart,m=0;i<ranEnd;i++)
-		{
-			if(net.data[i][col]!=-274)
-			{
-				if(net.data[i][col]>max)
-					max=net.data[i][col];
-				if(net.data[i][col]<min)
-					min=net.data[i][col];
-				acum+=net.data[i][col];
-			}
-			else
-				m++;
-		}
-		average=acum/(i-m-1);
-			N=ranEnd-ranStart-m;
-	}
+	else     //busco promedio para solo el sensor seleccionado
+		getAverage(net.data[col]);
+}
 
+void  Sensor::getAverage(float *arrayData)
+{
+	float w;  //acumulador de la suma de los datos
+	size_t i,noData;
+	max=min=arrayData[ranStart];  //tomo el primero como el maximo y minimo
+	for(i=ranStart,noData=0,w=0;i<ranEnd;i++)
+	{
+		if(arrayData[i]!=-274)       //-274 representa un dato del sensor en blanco
+		{						     // ya que es imposible alcanzar esa temperatura en °C
+			if(arrayData[i]>max)
+				max=arrayData[i];
+			if(arrayData[i]<min)
+				min=arrayData[i];
+			w+=arrayData[i];
+		}
+		else
+			noData++;				// Si es un dato en blanco, no lo cuento para el promedio
+	}
+	N=ranEnd-ranStart-noData;
+	average=w/N;
 }
 istream &operator>>(istream &is,Sensor &s)
 {

@@ -13,7 +13,7 @@ using namespace std;
 class NetSensor				//falta definir los construcores y destructores
 {
 	  string *name;			// arreglo dinamico que almacena la  cantidad de  sensores
-	  int **data;			// datos almacenados
+	  float **data;			// datos almacenados
 	  size_t row,column;	//dimensiones
 public:
 	  void readDataBase(ifstream &); //lee y carga los datos en una matriz

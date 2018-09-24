@@ -19,7 +19,7 @@ void NetSensor::readDataBase(ifstream & dataBaseFile)
 	string aux,line;
 	size_t k;
 	name=new string[LONG_ARRAY];
-	data=new int*[LONG_MATRIX];		//falta agrandar el resize() de la matriz
+	data=new float*[LONG_MATRIX];		//falta agrandar el resize() de la matriz
 
 	for(i=0;i<LONG_ARRAY &&  !isdigit(c) ;i++) // leo la primer linea hasta encontrar la cantidad
 	{										  // de sensores en la base de datos
@@ -36,7 +36,7 @@ void NetSensor::readDataBase(ifstream & dataBaseFile)
 	aux=c+aux;
 	for(i=0;i<LONG_MATRIX && !dataBaseFile.eof();i++)  //empiezo a cargar los datos
 	{
-		data[i]=new int[column];
+		data[i]=new float[column];
 		for(size_t j=0;j<column;j++)
 		{
 			if(j==0 && i==0)
@@ -51,7 +51,7 @@ void NetSensor::readDataBase(ifstream & dataBaseFile)
 				getline(dataBaseFile,line,',');
 			fin=line.length();
 			for(k=0;k<fin && line[k]==' ';k++);
-			stringstream str_st(line);
+				stringstream str_st(line);
 			if(k==line.length() && line[k-1]== ' ')
 				data[i][j]=-274;
 			else

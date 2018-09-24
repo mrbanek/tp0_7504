@@ -26,6 +26,7 @@ public:
 	size_t  lengthArray( ); // tamaño del arreglo
 	void   queryTemp(istream *&,ostream *&,ifstream &);  //consulta del promedio, maximo y minimo
 	void   searchAverage(bool &,NetSensor &,size_t &);   // Busca el promedio
+	void   getAverage(float *); //calculo el promedio
 	friend istream & operator>>(istream &,Sensor &);
 	friend ostream & operator<<(ostream &, const Sensor &);
 
